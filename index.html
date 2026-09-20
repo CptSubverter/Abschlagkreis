@@ -18,11 +18,11 @@ body{padding:14px;touch-action:manipulation}
 .cross:before,.cross:after{content:"";position:absolute;background:#e60000;border-radius:1px}
 .cross:before{width:22px;height:3px;left:0;top:9.5px}
 .cross:after{width:3px;height:22px;left:9.5px;top:0}
-.buttons{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:12px}
-button{font-size:16px;padding:11px 14px;border:1px solid #bbb;border-radius:10px;background:#f4f4f4;color:#111}
-button:active{transform:scale(.98)}
 label{display:block;font-size:15px;margin:10px 0 5px}
 input,textarea{width:100%;font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;border:1px solid #bbb;border-radius:9px;padding:10px;background:#fff}
+.buttons{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+button{font-size:16px;padding:11px 14px;border:1px solid #bbb;border-radius:10px;background:#f4f4f4;color:#111}
+button:active{transform:scale(.98)}
 textarea{min-height:90px;resize:vertical}
 .counter{text-align:right;font-size:13px;color:#666;margin-top:4px}
 </style>
@@ -34,17 +34,17 @@ textarea{min-height:90px;resize:vertical}
     <div class="cross" id="cross" aria-label="Kreuz verschieben"></div>
   </div>
 
-  <div class="buttons">
-    <button id="save">Bild speichern (PNG)</button>
-    <button id="center">Kreuz zentrieren</button>
-    <button id="reset">Kreuz zurücksetzen</button>
-  </div>
-
   <label for="topText">Bahn</label>
   <input id="topText" type="text" autocomplete="off" placeholder="Bahn eingeben">
 
   <label for="ball">Ball</label>
   <input id="ball" type="text" autocomplete="off">
+
+  <div class="buttons">
+    <button id="save">Bild speichern (PNG)</button>
+    <button id="center">Kreuz zentrieren</button>
+    <button id="reset">Kreuz zurücksetzen</button>
+  </div>
 
   <label for="note">Bemerkung</label>
   <textarea id="note" maxlength="200"></textarea>
@@ -60,6 +60,7 @@ const reset=document.getElementById('reset');
 const note=document.getElementById('note');
 const count=document.getElementById('count');
 const topText=document.getElementById('topText');
+const ball=document.getElementById('ball');
 
 let x=.5,y=.5,startX=0,startY=0,startPX=0,startPY=0,drag=false;
 function render(){cross.style.left=(x*100)+'%';cross.style.top=(y*100)+'%'}
@@ -89,7 +90,7 @@ board.addEventListener('pointerdown',e=>{
   render();
 });
 center.onclick=()=>{x=.5;y=.5;render()};
-reset.onclick=()=>{x=.5;y=.5;render();topText.value='';document.getElementById('ball').value='';note.value='';count.textContent='0'};
+reset.onclick=()=>{x=.5;y=.5;render();topText.value='';ball.value='';note.value='';count.textContent='0'};
 note.addEventListener('input',()=>count.textContent=note.value.length);
 
 save.onclick=async()=>{
