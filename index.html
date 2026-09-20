@@ -104,7 +104,21 @@ save.onclick=async()=>{
   const cx=x*size,cy=y*size;
   ctx.strokeStyle='#e60000';ctx.lineWidth=3;ctx.lineCap='butt';
   ctx.beginPath();ctx.moveTo(cx-11,cy);ctx.lineTo(cx+11,cy);ctx.moveTo(cx,cy-11);ctx.lineTo(cx,cy+11);ctx.stroke();
-  const a=document.createElement('a');a.download='Abschlagkreis.png';a.href=canvas.toDataURL('image/png');a.click();
+
+  canvas.toBlob(async blob=>{
+    if(!blob)return;
+    const file=new File([blob],'Abschlagkreis.png',{type:'image/png'});
+    if(navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}))){
+      try{
+        await navigator.share({title:'Abschlagkreis',text:'Abschlagkreis',files:[file]});
+        return;
+      }catch(e){
+        if(e.name==='AbortError')return;
+      }
+    }
+    const a=document.createElement('a');a.download='Abschlagkreis.png';a.href=URL.createObjectURL(blob);a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  },'image/png');
 };
 render();
 if ("serviceWorker" in navigator) window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));
