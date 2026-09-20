@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#fff">
+<meta name="theme-color" content="#ffffff">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.svg">
 <title>Abschlagkreis</title>
 <style>
 *{box-sizing:border-box}
@@ -104,6 +106,7 @@ save.onclick=async()=>{
   const a=document.createElement('a');a.download='Abschlagkreis.png';a.href=canvas.toDataURL('image/png');a.click();
 };
 render();
+if ("serviceWorker" in navigator) window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));
 </script>
 </body>
 </html>
