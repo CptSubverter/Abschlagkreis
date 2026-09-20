@@ -27,6 +27,9 @@ textarea{min-height:90px;resize:vertical}
 </head>
 <body>
 <div class="app">
+  <label for="topText">Text</label>
+  <input id="topText" type="text" autocomplete="off" placeholder="Text eingeben">
+
   <div class="board" id="board">
     <img src="kreis.svg" alt="">
     <div class="cross" id="cross" aria-label="Kreuz verschieben"></div>
@@ -54,6 +57,7 @@ const center=document.getElementById('center');
 const reset=document.getElementById('reset');
 const note=document.getElementById('note');
 const count=document.getElementById('count');
+const topText=document.getElementById('topText');
 
 let x=.5,y=.5,startX=0,startY=0,startPX=0,startPY=0,drag=false;
 function render(){cross.style.left=(x*100)+'%';cross.style.top=(y*100)+'%'}
@@ -83,7 +87,7 @@ board.addEventListener('pointerdown',e=>{
   render();
 });
 center.onclick=()=>{x=.5;y=.5;render()};
-reset.onclick=()=>{x=.5;y=.5;render();document.getElementById('ball').value='';note.value='';count.textContent='0'};
+reset.onclick=()=>{x=.5;y=.5;render();topText.value='';document.getElementById('ball').value='';note.value='';count.textContent='0'};
 note.addEventListener('input',()=>count.textContent=note.value.length);
 
 save.onclick=async()=>{
