@@ -1,0 +1,9 @@
+{
+  "name": "Abschlagkreis",
+  "short_name": "Abschlagkreis",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "orientation": "portrait"
+}
