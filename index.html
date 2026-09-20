@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#fff">
+<title>Abschlagkreis</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#111}
+body{padding:14px;touch-action:manipulation}
+.app{max-width:700px;margin:0 auto}
+.board{position:relative;width:min(94vw,620px);aspect-ratio:1;margin:0 auto 16px;touch-action:none;user-select:none;-webkit-user-select:none}
+.board img{display:block;width:100%;height:100%;pointer-events:none}
+.cross{position:absolute;width:22px;height:22px;left:50%;top:50%;transform:translate(-50%,-50%);touch-action:none;cursor:grab}
+.cross:before,.cross:after{content:"";position:absolute;background:#e60000;border-radius:1px}
+.cross:before{width:22px;height:3px;left:0;top:9.5px}
+.cross:after{width:3px;height:22px;left:9.5px;top:0}
+.buttons{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:12px}
+button{font-size:16px;padding:11px 14px;border:1px solid #bbb;border-radius:10px;background:#f4f4f4;color:#111}
+button:active{transform:scale(.98)}
+label{display:block;font-size:15px;margin:10px 0 5px}
+input,textarea{width:100%;font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;border:1px solid #bbb;border-radius:9px;padding:10px;background:#fff}
+textarea{min-height:90px;resize:vertical}
+.counter{text-align:right;font-size:13px;color:#666;margin-top:4px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="board" id="board">
+    <img src="kreis.svg" alt="">
+    <div class="cross" id="cross" aria-label="Kreuz verschieben"></div>
+  </div>
+
+  <div class="buttons">
+    <button id="save">Bild speichern (PNG)</button>
+    <button id="center">Kreuz zentrieren</button>
+    <button id="reset">Kreuz zurücksetzen</button>
+  </div>
+
+  <label for="ball">Ball</label>
+  <input id="ball" type="text" autocomplete="off">
+
+  <label for="note">Bemerkung</label>
+  <textarea id="note" maxlength="200"></textarea>
+  <div class="counter"><span id="count">0</span>/200</div>
+</div>
+
+<script>
+const board=document.getElementById('board');
+const cross=document.getElementById('cross');
+const save=document.getElementById('save');
+const center=document.getElementById('center');
+const reset=document.getElementById('reset');
+const note=document.getElementById('note');
+const count=document.getElementById('count');
+
+let x=.5,y=.5,startX=0,startY=0,startPX=0,startPY=0,drag=false;
+function render(){cross.style.left=(x*100)+'%';cross.style.top=(y*100)+'%'}
+function clamp(v){return Math.max(.02,Math.min(.98,v))}
+function pointerDown(e){
+  drag=true; cross.setPointerCapture?.(e.pointerId);
+  startPX=e.clientX; startPY=e.clientY; startX=x; startY=y;
+  e.preventDefault();
+}
+function pointerMove(e){
+  if(!drag)return;
+  const r=board.getBoundingClientRect();
+  x=clamp(startX+(e.clientX-startPX)/r.width);
+  y=clamp(startY+(e.clientY-startPY)/r.height);
+  render(); e.preventDefault();
+}
+function pointerUp(){drag=false}
+cross.addEventListener('pointerdown',pointerDown);
+cross.addEventListener('pointermove',pointerMove);
+cross.addEventListener('pointerup',pointerUp);
+cross.addEventListener('pointercancel',pointerUp);
+board.addEventListener('pointerdown',e=>{
+  if(e.target===cross)return;
+  const r=board.getBoundingClientRect();
+  x=clamp((e.clientX-r.left)/r.width);
+  y=clamp((e.clientY-r.top)/r.height);
+  render();
+});
+center.onclick=()=>{x=.5;y=.5;render()};
+reset.onclick=()=>{x=.5;y=.5;render();document.getElementById('ball').value='';note.value='';count.textContent='0'};
+note.addEventListener('input',()=>count.textContent=note.value.length);
+
+save.onclick=async()=>{
+  const canvas=document.createElement('canvas'),size=1254;
+  canvas.width=canvas.height=size;
+  const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,size,size);
+  const img=new Image();img.src='kreis.svg';
+  await new Promise((res,rej)=>{img.onload=res;img.onerror=rej});
+  ctx.drawImage(img,0,0,size,size);
+  const cx=x*size,cy=y*size;
+  ctx.strokeStyle='#e60000';ctx.lineWidth=3;ctx.lineCap='butt';
+  ctx.beginPath();ctx.moveTo(cx-11,cy);ctx.lineTo(cx+11,cy);ctx.moveTo(cx,cy-11);ctx.lineTo(cx,cy+11);ctx.stroke();
+  const a=document.createElement('a');a.download='Abschlagkreis.png';a.href=canvas.toDataURL('image/png');a.click();
+};
+render();
+</script>
+</body>
+</html>
