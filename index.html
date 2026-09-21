@@ -176,6 +176,8 @@ button.action:active,.segmentBtn:active{transform:scale(.98)}
     <div class="endButtons">
       <button class="action" id="clearEndLine" type="button">Linie löschen</button>
       <button class="action" id="resetEnd" type="button">Zurücksetzen</button>
+      <button class="action primary" id="shareEnd" type="button">Teilen</button>
+      <button class="action" id="downloadEndJpg" type="button">JPG herunterladen</button>
     </div>
   </main>
 </div>
@@ -421,6 +423,8 @@ const endNote=document.getElementById('endNote');
 const endCount=document.getElementById('endCount');
 const clearEndLine=document.getElementById('clearEndLine');
 const resetEnd=document.getElementById('resetEnd');
+const shareEnd=document.getElementById('shareEnd');
+const downloadEndJpg=document.getElementById('downloadEndJpg');
 let endDrawing=false,endStartX=0,endStartY=0,endEndX=0,endEndY=0,endHasLine=false;
 
 function drawEndCircle(){
@@ -461,6 +465,76 @@ endBoard.addEventListener('pointermove',e=>{
 endBoard.addEventListener('pointerup',()=>{endDrawing=false});
 endBoard.addEventListener('pointercancel',()=>{endDrawing=false});
 endNote.addEventListener('input',()=>endCount.textContent=endNote.value.length);
+
+function createEndExportCanvas(){
+  const size=1254,infoHeight=300,canvas=document.createElement('canvas');
+  canvas.width=size;canvas.height=size+infoHeight;
+  const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+  const cx=size/2,cy=size/2,rOuter=size*.47,rInner=rOuter-35,rCenter=64*(size/1000);
+  ctx.fillStyle='#fff';ctx.strokeStyle='#111';ctx.lineWidth=8;
+  ctx.beginPath();ctx.arc(cx,cy,rOuter,0,Math.PI*2);ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.arc(cx,cy,rInner,0,Math.PI*2);ctx.fill();ctx.stroke();
+  ctx.lineWidth=6;
+  ctx.beginPath();ctx.arc(cx,cy,rCenter,0,Math.PI*2);ctx.fill();ctx.stroke();
+  if(endHasLine){
+    ctx.strokeStyle='#e60000';ctx.lineWidth=5*(size/1000);ctx.lineCap='round';
+    ctx.beginPath();
+    ctx.moveTo(endStartX*(size/1000),endStartY*(size/1000));
+    ctx.lineTo(endEndX*(size/1000),endEndY*(size/1000));
+    ctx.stroke();
+  }
+  ctx.strokeStyle='#d0d0d0';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(45,size+8);ctx.lineTo(size-45,size+8);ctx.stroke();
+  ctx.fillStyle='#111';ctx.textAlign='left';ctx.font='bold 32px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif';
+  ctx.fillText('Bahn: '+(endTopText.value.trim()||'—'),55,size+55);
+  ctx.font='bold 30px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif';
+  ctx.fillText('Bemerkung:',55,size+98);
+  ctx.font='26px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif';
+  const text=endNote.value.trim()||'—',maxWidth=size-110,lineHeight=34;
+  let line='',yy=size+135;
+  for(const word of text.split(/\\s+/)){
+    const test=line?line+' '+word:word;
+    if(ctx.measureText(test).width>maxWidth&&line){ctx.fillText(line,55,yy);line=word;yy+=lineHeight;if(yy>canvas.height-18)break}
+    else line=test;
+  }
+  if(yy<=canvas.height-18)ctx.fillText(line,55,yy);
+  return canvas;
+}
+
+shareEnd.onclick=async()=>{
+  const canvas=createEndExportCanvas();
+  canvas.toBlob(async blob=>{
+    if(!blob)return;
+    const file=new File([blob],'Endkreis.png',{type:'image/png'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      try{
+        await navigator.share({
+          title:'Endkreis',
+          text:'Endkreis'+(endTopText.value.trim()?' – Bahn '+endTopText.value.trim():''),
+          files:[file]
+        });
+      }catch(e){if(e.name!=='AbortError')alert('Teilen konnte nicht gestartet werden.')}
+    }else if(navigator.share){
+      try{await navigator.share({title:'Endkreis',text:'Endkreis'+(endTopText.value.trim()?' – Bahn '+endTopText.value.trim():'')});}
+      catch(e){if(e.name!=='AbortError')alert('Teilen konnte nicht gestartet werden.')}
+    }else{
+      alert('Die Teilen-Funktion wird von diesem Browser nicht unterstützt.');
+    }
+  },'image/png');
+};
+
+downloadEndJpg.onclick=()=>{
+  const canvas=createEndExportCanvas();
+  canvas.toBlob(blob=>{
+    if(!blob)return;
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download='Endkreis'+(endTopText.value.trim()?'_Bahn_'+endTopText.value.trim().replace(/[^a-z0-9äöüÄÖÜß_-]+/gi,'_'):'')+'.jpg';
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  },'image/jpeg',0.92);
+};
 clearEndLine.onclick=()=>{endHasLine=false;drawEndCircle()};
 resetEnd.onclick=()=>{endTopText.value='';endNote.value='';endCount.textContent='0';endHasLine=false;drawEndCircle()};
 openEnd.onclick=()=>{
