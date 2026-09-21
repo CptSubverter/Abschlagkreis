@@ -426,7 +426,7 @@ let endDrawing=false,endStartX=0,endStartY=0,endEndX=0,endEndY=0,endHasLine=fals
 function drawEndCircle(){
   const NS='http://www.w3.org/2000/svg';
   endSvg.innerHTML='';
-  const cx=500,cy=500,outer=470,inner=442,centerR=16;
+  const cx=500,cy=500,outer=470,inner=442,centerR=64;
   for(const r of [outer,inner]){
     const circle=document.createElementNS(NS,'circle');
     circle.setAttribute('cx',cx);circle.setAttribute('cy',cy);circle.setAttribute('r',r);
