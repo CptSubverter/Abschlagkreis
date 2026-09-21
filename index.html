@@ -194,9 +194,11 @@ function drawCircle(){
     line.setAttribute('x1',cx);line.setAttribute('y1',cy);line.setAttribute('x2',ex);line.setAttribute('y2',ey);
     line.setAttribute('stroke','#111');line.setAttribute('stroke-width',segments>=48?'3':'5');circleSvg.appendChild(line);
   }
-  const centerDot=document.createElementNS(NS,'circle');
-  centerDot.setAttribute('cx',cx);centerDot.setAttribute('cy',cy);centerDot.setAttribute('r','96');
-  centerDot.setAttribute('fill','#111');circleSvg.appendChild(centerDot);
+  if(!isField){
+    const centerDot=document.createElementNS(NS,'circle');
+    centerDot.setAttribute('cx',cx);centerDot.setAttribute('cy',cy);centerDot.setAttribute('r','96');
+    centerDot.setAttribute('fill','#111');circleSvg.appendChild(centerDot);
+  }
 }
 
 function segmentIcon(n){
@@ -291,7 +293,7 @@ share.onclick=async()=>{
     }else{ex=cx+Math.cos(a)*r;ey=cy+Math.sin(a)*r}
     ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(ex,ey);ctx.stroke()
   }
-  ctx.fillStyle='#111';ctx.beginPath();ctx.arc(cx,cy,120,0,Math.PI*2);ctx.fill();
+  if(!isField){ctx.fillStyle='#111';ctx.beginPath();ctx.arc(cx,cy,120,0,Math.PI*2);ctx.fill();}
   const boardPx=board.getBoundingClientRect().width;
   const scale=size/boardPx;
   const crossX=x*size,crossY=y*size;
