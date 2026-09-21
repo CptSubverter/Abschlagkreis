@@ -28,7 +28,7 @@ textarea{min-height:118px;resize:vertical}
 .boardWrap{background:#fff;padding:14px;border-radius:2px}
 .board{position:relative;width:100%;aspect-ratio:1;touch-action:none;user-select:none;-webkit-user-select:none}
 #circleSvg{display:block;width:100%;height:100%}
-.fieldMode .board{aspect-ratio:2 / 1}
+.fieldMode .board{aspect-ratio:2.8 / 1}
 .fieldMode .boardWrap{padding:14px}
 .cross{position:absolute;width:30px;height:30px;left:50%;top:50%;transform:translate(-50%,-50%);touch-action:none;cursor:grab;z-index:2}
 .cross:before,.cross:after{content:"";position:absolute;background:#e60000;border-radius:1px}
@@ -103,7 +103,7 @@ button.action:active,.segmentBtn:active{transform:scale(.98)}
     </button>
     <button class="homeCard" id="openField" type="button">
       <div class="homeIcon"><svg viewBox="0 0 180 140"><rect x="18" y="30" width="144" height="80" fill="#fff" stroke="#111" stroke-width="6"/><path d="M90 30v80M18 70h144" stroke="#111" stroke-width="3"/><path d="M90 55v30M75 70h30" stroke="#e60000" stroke-width="4"/></svg></div>
-      <h2>Abschlagfeld</h2><p>Ein längliches Abschlagfeld mit denselben Funktionen wie beim Abschlagkreis.</p>
+      <h2>Abschlagmarkierung</h2><p>Eine längliche Abschlagmarkierung mit denselben Funktionen wie beim Abschlagkreis.</p>
     </button>
   </div>
 </section>
@@ -141,9 +141,9 @@ button.action:active,.segmentBtn:active{transform:scale(.98)}
 
   <aside class="segmentPanel">
     <h2>Segmente wählen</h2>
-    <p>Wähle, in wie viele Segmente der Kreis unterteilt werden soll.</p>
+    <p>Wähle, in wie viele Segmente die Abschlagmarkierung unterteilt werden soll.</p>
     <div class="segmentGrid" id="segmentGrid"></div>
-    <div class="info"><b>Hinweis</b><br>Der Kreis wird in die gewählte Anzahl gleich großer Segmente unterteilt. Das rote Kreuz bleibt frei verschiebbar.</div>
+    <div class="info"><b>Hinweis</b><br>Die Abschlagmarkierung wird in die gewählte Anzahl gleich großer Segmente unterteilt. Das rote Kreuz bleibt frei verschiebbar.</div>
   </aside>
 </div>
 </div>
