@@ -28,7 +28,7 @@ textarea{min-height:118px;resize:vertical}
 .boardWrap{background:#fff;padding:14px;border-radius:2px}
 .board{position:relative;width:100%;aspect-ratio:1;touch-action:none;user-select:none;-webkit-user-select:none}
 #circleSvg{display:block;width:100%;height:100%}
-.fieldMode .board{aspect-ratio:2.8 / 1}
+.fieldMode .board{aspect-ratio:3.6 / 1}
 .fieldMode .boardWrap{padding:14px}
 .cross{position:absolute;width:30px;height:30px;left:50%;top:50%;transform:translate(-50%,-50%);touch-action:none;cursor:grab;z-index:2}
 .cross:before,.cross:after{content:"";position:absolute;background:#e60000;border-radius:1px}
@@ -174,7 +174,7 @@ function drawCircle(){
   circleSvg.innerHTML='';
   const isField=document.body.classList.contains('fieldMode');
   const cx=500,cy=500;
-  let minX=20,maxX=980,minY=270,maxY=730,r=470;
+  let minX=5,maxX=995,minY=360,maxY=640,r=470;
   if(!isField){minX=30;maxX=970;minY=30;maxY=970}
   const outline=document.createElementNS(NS,isField?'rect':'circle');
   if(isField){
@@ -198,11 +198,19 @@ function drawCircle(){
 
 function segmentIcon(n){
   const NS='http://www.w3.org/2000/svg';
-  const s=document.createElementNS(NS,'svg');s.setAttribute('viewBox','0 0 100 100');
-  const c=document.createElementNS(NS,'circle');c.setAttribute('cx','50');c.setAttribute('cy','50');c.setAttribute('r','39');c.setAttribute('fill','none');c.setAttribute('stroke','currentColor');c.setAttribute('stroke-width','5');s.appendChild(c);
-  for(let i=0;i<n;i++){
-    const a=i/n*Math.PI*2-Math.PI/2;
-    const l=document.createElementNS(NS,'line');l.setAttribute('x1','50');l.setAttribute('y1','50');l.setAttribute('x2',50+39*Math.cos(a));l.setAttribute('y2',50+39*Math.sin(a));l.setAttribute('stroke','currentColor');l.setAttribute('stroke-width',n>=48?'1.5':'2.5');s.appendChild(l);
+  const s=document.createElementNS(NS,'svg');s.setAttribute('viewBox','0 0 120 80');
+  const isField=document.body.classList.contains('fieldMode');
+  if(isField){
+    const x=8,y=18,w=104,h=44,cx=60,cy=40;
+    const q=document.createElementNS(NS,'rect');q.setAttribute('x',x);q.setAttribute('y',y);q.setAttribute('width',w);q.setAttribute('height',h);q.setAttribute('fill','none');q.setAttribute('stroke','currentColor');q.setAttribute('stroke-width','5');s.appendChild(q);
+    for(let i=0;i<n;i++){
+      const a=i/n*Math.PI*2-Math.PI/2,dx=Math.cos(a),dy=Math.sin(a);
+      const tx=dx===0?Infinity:((dx>0?x+w-cx:x-cx)/dx),ty=dy===0?Infinity:((dy>0?y+h-cy:y-cy)/dy),t=Math.min(Math.abs(tx),Math.abs(ty));
+      const l=document.createElementNS(NS,'line');l.setAttribute('x1',cx);l.setAttribute('y1',cy);l.setAttribute('x2',cx+dx*t);l.setAttribute('y2',cy+dy*t);l.setAttribute('stroke','currentColor');l.setAttribute('stroke-width',n>=48?'1.5':'2.5');s.appendChild(l);
+    }
+  }else{
+    const c=document.createElementNS(NS,'circle');c.setAttribute('cx','60');c.setAttribute('cy','40');c.setAttribute('r','31');c.setAttribute('fill','none');c.setAttribute('stroke','currentColor');c.setAttribute('stroke-width','5');s.appendChild(c);
+    for(let i=0;i<n;i++){const a=i/n*Math.PI*2-Math.PI/2;const l=document.createElementNS(NS,'line');l.setAttribute('x1','60');l.setAttribute('y1','40');l.setAttribute('x2',60+31*Math.cos(a));l.setAttribute('y2',40+31*Math.sin(a));l.setAttribute('stroke','currentColor');l.setAttribute('stroke-width',n>=48?'1.5':'2.5');s.appendChild(l);}
   }
   return s;
 }
