@@ -28,7 +28,7 @@ textarea{min-height:118px;resize:vertical}
 .boardWrap{background:#fff;padding:14px;border-radius:2px}
 .board{position:relative;width:100%;aspect-ratio:1;touch-action:none;user-select:none;-webkit-user-select:none}
 #circleSvg{display:block;width:100%;height:100%}
-.fieldMode .board{aspect-ratio:3.6 / 1}
+.fieldMode .board{aspect-ratio:4.2 / 1}
 .fieldMode .boardWrap{padding:14px}
 .cross{position:absolute;width:30px;height:30px;left:50%;top:50%;transform:translate(-50%,-50%);touch-action:none;cursor:grab;z-index:2}
 .cross:before,.cross:after{content:"";position:absolute;background:#e60000;border-radius:1px}
@@ -72,7 +72,7 @@ button.action:active,.segmentBtn:active{transform:scale(.98)}
 }
 
 .home{min-height:70vh;display:flex;align-items:center;justify-content:center}
-.homeGrid{display:grid;grid-template-columns:repeat(2,minmax(260px,420px));gap:22px;width:100%;justify-content:center}
+.homeTitle{position:absolute;top:105px;left:0;right:0;text-align:center;font-size:clamp(30px,5vw,48px);margin:0}.homeGrid{display:grid;grid-template-columns:repeat(2,minmax(260px,420px));gap:22px;width:100%;justify-content:center}
 .homeCard{border:1px solid #3b4a52;border-radius:16px;background:#202d34;padding:26px;box-shadow:0 3px 12px #0004;text-align:left;color:#fff;cursor:pointer}
 .homeCard:hover{border-color:#2196f3}
 .homeCard h2{font-size:28px;margin:0 0 8px}
@@ -95,15 +95,15 @@ button.action:active,.segmentBtn:active{transform:scale(.98)}
   <div class="tagline">Dein Tool<br>für den perfekten<br>Abschlag.</div>
 </header>
 
-<section class="home" id="home">
+<section class="home" id="home"><h1 class="homeTitle">Abschlagmarkierung</h1>
   <div class="homeGrid">
     <button class="homeCard" id="openCircle" type="button">
       <div class="homeIcon"><svg viewBox="0 0 160 160"><circle cx="80" cy="80" r="61" fill="#fff" stroke="#111" stroke-width="6"/><path d="M80 19v122M19 80h122" stroke="#111" stroke-width="3"/><path d="M80 65v30M65 80h30" stroke="#e60000" stroke-width="4"/></svg></div>
-      <h2>Abschlagkreis</h2><p>Den Abschlagkreis wie bisher öffnen und das rote Kreuz frei positionieren.</p>
+      <h2>Abschlagkreis</h2><p>Öffnet den Abschlagkreis mit dem roten Kreuz.</p>
     </button>
     <button class="homeCard" id="openField" type="button">
       <div class="homeIcon"><svg viewBox="0 0 180 140"><rect x="18" y="30" width="144" height="80" fill="#fff" stroke="#111" stroke-width="6"/><path d="M90 30v80M18 70h144" stroke="#111" stroke-width="3"/><path d="M90 55v30M75 70h30" stroke="#e60000" stroke-width="4"/></svg></div>
-      <h2>Abschlagmarkierung</h2><p>Eine längliche Abschlagmarkierung mit denselben Funktionen wie beim Abschlagkreis.</p>
+      <h2>Abschlagmarkierung</h2><p>Öffnet das Abschlagfeld für die Abschlagmarkierung.</p>
     </button>
   </div>
 </section>
@@ -174,7 +174,7 @@ function drawCircle(){
   circleSvg.innerHTML='';
   const isField=document.body.classList.contains('fieldMode');
   const cx=500,cy=500;
-  let minX=5,maxX=995,minY=360,maxY=640,r=470;
+  let minX=5,maxX=995,minY=385,maxY=615,r=470;
   if(!isField){minX=30;maxX=970;minY=30;maxY=970}
   const outline=document.createElementNS(NS,isField?'rect':'circle');
   if(isField){
@@ -198,10 +198,10 @@ function drawCircle(){
 
 function segmentIcon(n){
   const NS='http://www.w3.org/2000/svg';
-  const s=document.createElementNS(NS,'svg');s.setAttribute('viewBox','0 0 120 80');
+  const s=document.createElementNS(NS,'svg');s.setAttribute('viewBox','0 0 140 70');
   const isField=document.body.classList.contains('fieldMode');
   if(isField){
-    const x=8,y=18,w=104,h=44,cx=60,cy=40;
+    const x=4,y=16,w=132,h=38,cx=70,cy=35;
     const q=document.createElementNS(NS,'rect');q.setAttribute('x',x);q.setAttribute('y',y);q.setAttribute('width',w);q.setAttribute('height',h);q.setAttribute('fill','none');q.setAttribute('stroke','currentColor');q.setAttribute('stroke-width','5');s.appendChild(q);
     for(let i=0;i<n;i++){
       const a=i/n*Math.PI*2-Math.PI/2,dx=Math.cos(a),dy=Math.sin(a);
