@@ -28,7 +28,7 @@ textarea{min-height:118px;resize:vertical}
 .boardWrap{background:#fff;padding:14px;border-radius:2px}
 .board{position:relative;width:100%;aspect-ratio:1;touch-action:none;user-select:none;-webkit-user-select:none}
 #circleSvg{display:block;width:100%;height:100%}
-.fieldMode .board{aspect-ratio:3 / 1}
+.fieldMode .board{aspect-ratio:1 / 1}
 .fieldMode .boardWrap{padding:14px}
 .cross{position:absolute;width:30px;height:30px;left:50%;top:50%;transform:translate(-50%,-50%);touch-action:none;cursor:grab;z-index:2}
 .cross:before,.cross:after{content:"";position:absolute;background:#e60000;border-radius:1px}
@@ -174,7 +174,7 @@ function drawCircle(){
   circleSvg.innerHTML='';
   const isField=document.body.classList.contains('fieldMode');
   const cx=500,cy=500;
-  let minX=15,maxX=985,minY=335,maxY=665,r=470;
+  let minX=30,maxX=970,minY=124,maxY=876,r=470;
   if(!isField){minX=30;maxX=970;minY=30;maxY=970}
   const outline=document.createElementNS(NS,isField?'rect':'circle');
   if(isField){
@@ -260,7 +260,7 @@ share.onclick=async()=>{
   ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
   const isField=document.body.classList.contains('fieldMode');
   const cx=size/2,cy=size/2,r=size*.47;
-  const left=isField?25:40,right=isField?1229:size-40,top=isField?450:40,bottom=isField?804:size-40;
+  const left=isField?40:40,right=isField?1214:size-40,top=isField?157:40,bottom=isField?1096:size-40;
   ctx.fillStyle='#fff';ctx.strokeStyle='#111';ctx.lineWidth=10;
   ctx.beginPath();
   if(isField)ctx.rect(left,top,right-left,bottom-top);else ctx.arc(cx,cy,r,0,Math.PI*2);
