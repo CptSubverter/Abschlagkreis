@@ -199,12 +199,12 @@ function drawCircle(){
     centerDot.setAttribute('cx',cx);centerDot.setAttribute('cy',cy);centerDot.setAttribute('r','96');
     centerDot.setAttribute('fill','#111');circleSvg.appendChild(centerDot);
   }else{
-    const warning=[['BAHNEN',360],['NICHT',500],['BETRETEN',640]];
+    const warning=[['BAHNEN',330],['NICHT',500],['BETRETEN',670]];
     warning.forEach(([txt,yy])=>{
       const t=document.createElementNS(NS,'text');
       t.setAttribute('x',cx);t.setAttribute('y',yy);t.setAttribute('text-anchor','middle');
       t.setAttribute('dominant-baseline','middle');t.setAttribute('fill','#111');
-      t.setAttribute('font-family','Arial, Helvetica, sans-serif');t.setAttribute('font-size','92');
+      t.setAttribute('font-family','Arial, Helvetica, sans-serif');t.setAttribute('font-size','130');
       t.setAttribute('font-weight','900');t.textContent=txt;circleSvg.appendChild(t);
     });
   }
@@ -305,8 +305,8 @@ share.onclick=async()=>{
   if(!isField){ctx.fillStyle='#111';ctx.beginPath();ctx.arc(cx,cy,120,0,Math.PI*2);ctx.fill();}
   if(isField){
     ctx.fillStyle='#111';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.font='900 92px Arial, Helvetica, sans-serif';
-    ctx.fillText('BAHNEN',cx,360);ctx.fillText('NICHT',cx,500);ctx.fillText('BETRETEN',cx,640);
+    ctx.font='900 130px Arial, Helvetica, sans-serif';
+    ctx.fillText('BAHNEN',cx,330);ctx.fillText('NICHT',cx,500);ctx.fillText('BETRETEN',cx,670);
   }
   const boardPx=board.getBoundingClientRect().width;
   const scale=size/boardPx;
