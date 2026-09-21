@@ -3,57 +3,127 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#18232a">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.svg">
 <title>Abschlagkreis</title>
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;background:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#111}
+:root{color-scheme:dark}
+html,body{margin:0;min-height:100%;background:#172229;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 body{padding:14px;touch-action:manipulation}
-.app{max-width:700px;margin:0 auto}
-.board{position:relative;width:min(94vw,620px);aspect-ratio:1;margin:0 auto 16px;touch-action:none;user-select:none;-webkit-user-select:none}
-.board img{display:block;width:100%;height:100%;pointer-events:none}
-.cross{position:absolute;width:22px;height:22px;left:50%;top:50%;transform:translate(-50%,-50%);touch-action:none;cursor:grab}
+.app{max-width:1180px;margin:0 auto}
+header{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:8px 8px 18px;border-bottom:1px solid #34434c;margin-bottom:14px}
+.brand{font-size:clamp(28px,5vw,58px);font-weight:800;letter-spacing:-1px}
+.brand span{color:#2196f3}
+.subtitle{font-size:clamp(14px,2vw,24px);color:#c8d0d5;margin-top:2px}
+.tagline{color:#49aaf5;font-size:clamp(14px,2vw,24px);text-align:right;max-width:260px}
+.workspace{display:grid;grid-template-columns:270px minmax(320px,640px) 270px;gap:14px;align-items:start}
+.panel,.segmentPanel{background:#202d34;border:1px solid #3b4a52;border-radius:12px;padding:14px;box-shadow:0 3px 12px #0004}
+label{display:block;font-size:17px;font-weight:700;margin:0 0 6px}
+.field{margin-bottom:14px}
+input,textarea{width:100%;font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#111;background:#fff;border:0;border-radius:9px;padding:12px}
+textarea{min-height:118px;resize:vertical}
+.counter{text-align:right;color:#aeb8be;font-size:12px;margin-top:4px}
+.boardWrap{background:#fff;padding:14px;border-radius:2px}
+.board{position:relative;width:100%;aspect-ratio:1;touch-action:none;user-select:none;-webkit-user-select:none}
+#circleSvg{display:block;width:100%;height:100%}
+.cross{position:absolute;width:30px;height:30px;left:50%;top:50%;transform:translate(-50%,-50%);touch-action:none;cursor:grab;z-index:2}
 .cross:before,.cross:after{content:"";position:absolute;background:#e60000;border-radius:1px}
-.cross:before{width:22px;height:3px;left:0;top:9.5px}
-.cross:after{width:3px;height:22px;left:9.5px;top:0}
-label{display:block;font-size:15px;margin:10px 0 5px}
-input,textarea{width:100%;font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;border:1px solid #bbb;border-radius:9px;padding:10px;background:#fff}
-.buttons{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0}
-button{font-size:16px;padding:11px 14px;border:1px solid #bbb;border-radius:10px;background:#f4f4f4;color:#111}
-button:active{transform:scale(.98)}
-textarea{min-height:90px;resize:vertical}
-.counter{text-align:right;font-size:13px;color:#666;margin-top:4px}
+.cross:before{width:30px;height:5px;left:0;top:12.5px}
+.cross:after{width:5px;height:30px;left:12.5px;top:0}
+.segmentPanel h2{font-size:21px;margin:0 0 6px}
+.segmentPanel p{color:#e0e5e8;line-height:1.4;margin:0 0 12px}
+.segmentGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.segmentBtn{min-height:74px;border:1px solid #4c5960;border-radius:10px;background:#28353c;color:#fff;font-size:15px;font-weight:700;padding:7px}
+.segmentBtn svg{display:block;width:42px;height:42px;margin:0 auto 2px}
+.segmentBtn.selected{background:#2196f3;border-color:#62b9ff}
+.info{margin-top:12px;padding:12px;border:1px solid #43525a;border-radius:10px;color:#dce3e7;line-height:1.45}
+.info b{color:#fff}
+.buttons{display:flex;gap:10px;justify-content:center;margin-top:14px}
+button.action{font-size:16px;font-weight:700;padding:13px 20px;border:1px solid #52616a;border-radius:10px;background:#2a373e;color:#fff}
+button.action.primary{background:#2196f3;border-color:#5bb8ff;min-width:240px}
+button.action:active,.segmentBtn:active{transform:scale(.98)}
+@media(max-width:900px){
+  .workspace{grid-template-columns:1fr}
+  .panel{order:2}
+  .boardWrap{order:1}
+  .segmentPanel{order:3}
+  header{align-items:flex-start}
+  .tagline{display:none}
+  .panel{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .panel .field{margin:0}
+  .panel .field:last-child{grid-column:1/-1}
+}
+@media(max-width:520px){
+  body{padding:9px}
+  header{padding-bottom:10px}
+  .brand{font-size:30px}
+  .subtitle{font-size:13px}
+  .boardWrap{padding:7px}
+  .panel{display:block}
+  .panel .field{margin-bottom:12px}
+  .segmentGrid{grid-template-columns:repeat(3,1fr)}
+  .segmentBtn{min-height:68px}
+  .buttons{flex-direction:column}
+  button.action,button.action.primary{width:100%}
+}
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="board" id="board">
-    <img src="kreis.svg" alt="">
-    <div class="cross" id="cross" aria-label="Kreuz verschieben"></div>
+<header>
+  <div>
+    <div class="brand">Abschlag<span>kreis</span></div>
+    <div class="subtitle">Minigolf · Einfach · Präzise</div>
   </div>
+  <div class="tagline">Dein Tool<br>für den perfekten<br>Abschlag.</div>
+</header>
 
-  <label for="topText">Bahn</label>
-  <input id="topText" type="text" autocomplete="off" placeholder="Bahn eingeben">
+<div class="workspace">
+  <section class="panel">
+    <div class="field">
+      <label for="topText">Bahn</label>
+      <input id="topText" type="text" autocomplete="off" placeholder="Bahn eingeben">
+    </div>
+    <div class="field">
+      <label for="ball">Ball <span style="font-weight:400">(optional)</span></label>
+      <input id="ball" type="text" autocomplete="off" placeholder="z. B. 3D, M&G ...">
+    </div>
+    <div class="field">
+      <label for="note">Bemerkung <span style="font-weight:400">(optional)</span></label>
+      <textarea id="note" maxlength="200" placeholder="z. B. Linie, Tempo ..."></textarea>
+      <div class="counter"><span id="count">0</span>/200</div>
+    </div>
+  </section>
 
-  <label for="ball">Ball</label>
-  <input id="ball" type="text" autocomplete="off">
+  <main>
+    <div class="boardWrap">
+      <div class="board" id="board">
+        <svg id="circleSvg" viewBox="0 0 1000 1000" aria-label="Abschlagkreis"></svg>
+        <div class="cross" id="cross" aria-label="Kreuz verschieben"></div>
+      </div>
+    </div>
+    <div class="buttons">
+      <button class="action" id="center">Kreuz zentrieren</button>
+      <button class="action primary" id="save">PNG speichern</button>
+      <button class="action" id="reset">Zurücksetzen</button>
+    </div>
+  </main>
 
-  <div class="buttons">
-    <button id="save">PNG speichern</button>
-    <button id="center">Kreuz zentrieren</button>
-    <button id="reset">Kreuz zurücksetzen</button>
-  </div>
-
-  <label for="note">Bemerkung</label>
-  <textarea id="note" maxlength="200"></textarea>
-  <div class="counter"><span id="count">0</span>/200</div>
+  <aside class="segmentPanel">
+    <h2>Segmente wählen</h2>
+    <p>Wähle, in wie viele Segmente der Kreis unterteilt werden soll.</p>
+    <div class="segmentGrid" id="segmentGrid"></div>
+    <div class="info"><b>Hinweis</b><br>Der Kreis wird in die gewählte Anzahl gleich großer Segmente unterteilt. Das rote Kreuz bleibt frei verschiebbar.</div>
+  </aside>
+</div>
 </div>
 
 <script>
 const board=document.getElementById('board');
 const cross=document.getElementById('cross');
+const circleSvg=document.getElementById('circleSvg');
 const save=document.getElementById('save');
 const center=document.getElementById('center');
 const reset=document.getElementById('reset');
@@ -61,21 +131,67 @@ const note=document.getElementById('note');
 const count=document.getElementById('count');
 const topText=document.getElementById('topText');
 const ball=document.getElementById('ball');
+const segmentGrid=document.getElementById('segmentGrid');
 
+const segmentOptions=[4,8,12,16,24,32,36,48,64];
+let segments=16;
 let x=.5,y=.5,startX=0,startY=0,startPX=0,startPY=0,drag=false;
-function render(){cross.style.left=(x*100)+'%';cross.style.top=(y*100)+'%'}
+
+function renderCross(){cross.style.left=(x*100)+'%';cross.style.top=(y*100)+'%'}
 function clamp(v){return Math.max(.02,Math.min(.98,v))}
+
+function drawCircle(){
+  const NS='http://www.w3.org/2000/svg';
+  circleSvg.innerHTML='';
+  const cx=500,cy=500,r=470;
+  const outline=document.createElementNS(NS,'circle');
+  outline.setAttribute('cx',cx);outline.setAttribute('cy',cy);outline.setAttribute('r',r);
+  outline.setAttribute('fill','#fff');outline.setAttribute('stroke','#111');outline.setAttribute('stroke-width','10');
+  circleSvg.appendChild(outline);
+  for(let i=0;i<segments;i++){
+    const a=(i/segments)*Math.PI*2-Math.PI/2;
+    const line=document.createElementNS(NS,'line');
+    line.setAttribute('x1',cx);line.setAttribute('y1',cy);
+    line.setAttribute('x2',cx+Math.cos(a)*r);line.setAttribute('y2',cy+Math.sin(a)*r);
+    line.setAttribute('stroke','#111');line.setAttribute('stroke-width',segments>=48?'3':'5');
+    circleSvg.appendChild(line);
+  }
+}
+
+function segmentIcon(n){
+  const NS='http://www.w3.org/2000/svg';
+  const s=document.createElementNS(NS,'svg');s.setAttribute('viewBox','0 0 100 100');
+  const c=document.createElementNS(NS,'circle');c.setAttribute('cx','50');c.setAttribute('cy','50');c.setAttribute('r','39');c.setAttribute('fill','none');c.setAttribute('stroke','currentColor');c.setAttribute('stroke-width','5');s.appendChild(c);
+  for(let i=0;i<n;i++){
+    const a=i/n*Math.PI*2-Math.PI/2;
+    const l=document.createElementNS(NS,'line');l.setAttribute('x1','50');l.setAttribute('y1','50');l.setAttribute('x2',50+39*Math.cos(a));l.setAttribute('y2',50+39*Math.sin(a));l.setAttribute('stroke','currentColor');l.setAttribute('stroke-width',n>=48?'1.5':'2.5');s.appendChild(l);
+  }
+  return s;
+}
+
+function buildSegmentButtons(){
+  segmentGrid.innerHTML='';
+  segmentOptions.forEach(n=>{
+    const b=document.createElement('button');
+    b.className='segmentBtn'+(n===segments?' selected':'');
+    b.type='button';
+    b.appendChild(segmentIcon(n));
+    const t=document.createElement('span');t.textContent=n;b.appendChild(t);
+    b.addEventListener('click',()=>{segments=n;buildSegmentButtons();drawCircle()});
+    segmentGrid.appendChild(b);
+  });
+}
+
 function pointerDown(e){
-  drag=true; cross.setPointerCapture?.(e.pointerId);
-  startPX=e.clientX; startPY=e.clientY; startX=x; startY=y;
-  e.preventDefault();
+  drag=true;cross.setPointerCapture?.(e.pointerId);
+  startPX=e.clientX;startPY=e.clientY;startX=x;startY=y;e.preventDefault();
 }
 function pointerMove(e){
   if(!drag)return;
   const r=board.getBoundingClientRect();
   x=clamp(startX+(e.clientX-startPX)/r.width);
   y=clamp(startY+(e.clientY-startPY)/r.height);
-  render(); e.preventDefault();
+  renderCross();e.preventDefault();
 }
 function pointerUp(){drag=false}
 cross.addEventListener('pointerdown',pointerDown);
@@ -85,41 +201,32 @@ cross.addEventListener('pointercancel',pointerUp);
 board.addEventListener('pointerdown',e=>{
   if(e.target===cross)return;
   const r=board.getBoundingClientRect();
-  x=clamp((e.clientX-r.left)/r.width);
-  y=clamp((e.clientY-r.top)/r.height);
-  render();
+  x=clamp((e.clientX-r.left)/r.width);y=clamp((e.clientY-r.top)/r.height);renderCross();
 });
-center.onclick=()=>{x=.5;y=.5;render()};
-reset.onclick=()=>{x=.5;y=.5;render();topText.value='';ball.value='';note.value='';count.textContent='0'};
+center.onclick=()=>{x=.5;y=.5;renderCross()};
+reset.onclick=()=>{x=.5;y=.5;renderCross();topText.value='';ball.value='';note.value='';count.textContent='0';segments=16;buildSegmentButtons();drawCircle()};
 note.addEventListener('input',()=>count.textContent=note.value.length);
 
-save.onclick=async()=>{
-  const canvas=document.createElement('canvas'),size=1254;
-  canvas.width=canvas.height=size;
+save.onclick=()=>{
+  const size=1254,canvas=document.createElement('canvas');canvas.width=canvas.height=size;
   const ctx=canvas.getContext('2d');
   ctx.fillStyle='#fff';ctx.fillRect(0,0,size,size);
-  const img=new Image();img.src='kreis.svg';
-  await new Promise((res,rej)=>{img.onload=res;img.onerror=rej});
-  ctx.drawImage(img,0,0,size,size);
-  const cx=x*size,cy=y*size;
-  ctx.strokeStyle='#e60000';ctx.lineWidth=3;ctx.lineCap='butt';
-  ctx.beginPath();ctx.moveTo(cx-11,cy);ctx.lineTo(cx+11,cy);ctx.moveTo(cx,cy-11);ctx.lineTo(cx,cy+11);ctx.stroke();
-
+  const cx=size/2,cy=size/2,r=size*.47;
+  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();ctx.strokeStyle='#111';ctx.lineWidth=10;ctx.stroke();
+  ctx.strokeStyle='#111';ctx.lineWidth=segments>=48?3:5;
+  for(let i=0;i<segments;i++){const a=i/segments*Math.PI*2-Math.PI/2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);ctx.stroke()}
+  const crossX=x*size,crossY=y*size;ctx.strokeStyle='#e60000';ctx.lineWidth=5;ctx.lineCap='butt';
+  ctx.beginPath();ctx.moveTo(crossX-15,crossY);ctx.lineTo(crossX+15,crossY);ctx.moveTo(crossX,crossY-15);ctx.lineTo(crossX,crossY+15);ctx.stroke();
   canvas.toBlob(blob=>{
     if(!blob)return;
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=url;
-    a.download='Abschlagkreis.png';
-    a.rel='noopener';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    const url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url;a.download='Abschlagkreis.png';a.rel='noopener';document.body.appendChild(a);a.click();a.remove();
     setTimeout(()=>URL.revokeObjectURL(url),2000);
   },'image/png');
 };
-render();
-if ("serviceWorker" in navigator) window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));
+
+renderCross();buildSegmentButtons();drawCircle();
+if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));
 </script>
 </body>
 </html>
