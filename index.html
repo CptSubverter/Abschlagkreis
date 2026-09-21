@@ -28,7 +28,7 @@ textarea{min-height:118px;resize:vertical}
 .boardWrap{background:#fff;padding:14px;border-radius:2px}
 .board{position:relative;width:100%;aspect-ratio:1;touch-action:none;user-select:none;-webkit-user-select:none}
 #circleSvg{display:block;width:100%;height:100%}
-.fieldMode .board{aspect-ratio:4.2 / 1}
+.fieldMode .board{aspect-ratio:3 / 1}
 .fieldMode .boardWrap{padding:14px}
 .cross{position:absolute;width:30px;height:30px;left:50%;top:50%;transform:translate(-50%,-50%);touch-action:none;cursor:grab;z-index:2}
 .cross:before,.cross:after{content:"";position:absolute;background:#e60000;border-radius:1px}
@@ -71,7 +71,7 @@ button.action:active,.segmentBtn:active{transform:scale(.98)}
   button.action,button.action.primary{width:100%}
 }
 
-.home{min-height:70vh;display:flex;align-items:center;justify-content:center}
+.home{position:relative;min-height:70vh;display:flex;align-items:center;justify-content:center}
 .homeTitle{position:absolute;top:105px;left:0;right:0;text-align:center;font-size:clamp(30px,5vw,48px);margin:0}.homeGrid{display:grid;grid-template-columns:repeat(2,minmax(260px,420px));gap:22px;width:100%;justify-content:center}
 .homeCard{border:1px solid #3b4a52;border-radius:16px;background:#202d34;padding:26px;box-shadow:0 3px 12px #0004;text-align:left;color:#fff;cursor:pointer}
 .homeCard:hover{border-color:#2196f3}
@@ -103,7 +103,7 @@ button.action:active,.segmentBtn:active{transform:scale(.98)}
     </button>
     <button class="homeCard" id="openField" type="button">
       <div class="homeIcon"><svg viewBox="0 0 180 140"><rect x="18" y="30" width="144" height="80" fill="#fff" stroke="#111" stroke-width="6"/><path d="M90 30v80M18 70h144" stroke="#111" stroke-width="3"/><path d="M90 55v30M75 70h30" stroke="#e60000" stroke-width="4"/></svg></div>
-      <h2>Abschlagmarkierung</h2><p>Öffnet das Abschlagfeld für die Abschlagmarkierung.</p>
+      <h2>Abschlagfeld</h2><p>Öffnet das rechteckige Abschlagfeld.</p>
     </button>
   </div>
 </section>
@@ -174,7 +174,7 @@ function drawCircle(){
   circleSvg.innerHTML='';
   const isField=document.body.classList.contains('fieldMode');
   const cx=500,cy=500;
-  let minX=5,maxX=995,minY=385,maxY=615,r=470;
+  let minX=15,maxX=985,minY=335,maxY=665,r=470;
   if(!isField){minX=30;maxX=970;minY=30;maxY=970}
   const outline=document.createElementNS(NS,isField?'rect':'circle');
   if(isField){
@@ -260,7 +260,7 @@ share.onclick=async()=>{
   ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
   const isField=document.body.classList.contains('fieldMode');
   const cx=size/2,cy=size/2,r=size*.47;
-  const left=isField?70:40,right=isField?1184:size-40,top=isField?315:40,bottom=isField?939:size-40;
+  const left=isField?25:40,right=isField?1229:size-40,top=isField?450:40,bottom=isField?804:size-40;
   ctx.fillStyle='#fff';ctx.strokeStyle='#111';ctx.lineWidth=10;
   ctx.beginPath();
   if(isField)ctx.rect(left,top,right-left,bottom-top);else ctx.arc(cx,cy,r,0,Math.PI*2);
