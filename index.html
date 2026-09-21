@@ -45,6 +45,8 @@ textarea{min-height:118px;resize:vertical}
 .buttons{display:flex;gap:10px;justify-content:center;margin-top:14px}
 button.action{font-size:16px;font-weight:700;padding:13px 20px;border:1px solid #52616a;border-radius:10px;background:#2a373e;color:#fff}
 button.action.primary{background:#2196f3;border-color:#5bb8ff;min-width:240px}
+.fieldOnlyAction{display:none!important}
+.fieldMode .fieldOnlyAction{display:inline-block!important}
 button.action:active,.segmentBtn:active{transform:scale(.98)}
 @media(max-width:900px){
   .workspace{grid-template-columns:1fr}
@@ -134,7 +136,7 @@ button.action:active,.segmentBtn:active{transform:scale(.98)}
     </div>
     <div class="buttons">
       <button class="action" id="center">Kreuz zentrieren</button>
-      <button class="action fieldOnlyAction" id="toggleWarning">Schriftzug ausblenden</button>
+      <button class="action fieldOnlyAction" id="toggleWarning" type="button" title="Schriftzug BAHNEN NICHT BETRETEN ein- oder ausblenden">Schriftzug ausblenden</button>
       <button class="action primary" id="share">Teilen</button>
       <button class="action" id="reset">Zurücksetzen</button>
     </div>
@@ -366,7 +368,6 @@ const openField=document.getElementById('openField');
 const backHome=document.getElementById('backHome');
 function openMode(field){
   document.body.classList.toggle('fieldMode',field);
-  toggleWarning.style.display=field?'inline-block':'none';
   warningVisible=true;toggleWarning.textContent='Schriftzug ausblenden';
   home.style.display='none';appPage.style.display='block';
   renderCross();drawCircle();
