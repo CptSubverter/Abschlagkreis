@@ -134,6 +134,7 @@ button.action:active,.segmentBtn:active{transform:scale(.98)}
     </div>
     <div class="buttons">
       <button class="action" id="center">Kreuz zentrieren</button>
+      <button class="action fieldOnlyAction" id="toggleWarning">Schriftzug ausblenden</button>
       <button class="action primary" id="share">Teilen</button>
       <button class="action" id="reset">Zurücksetzen</button>
     </div>
@@ -164,6 +165,7 @@ const segmentGrid=document.getElementById('segmentGrid');
 
 const segmentOptions=[0,4,8,12,16,24,32,36,48,64];
 let segments=16;
+let warningVisible=true;
 let x=.5,y=.5,startX=0,startY=0,startPX=0,startPY=0,drag=false;
 
 function renderCross(){cross.style.left=(x*100)+'%';cross.style.top=(y*100)+'%'}
@@ -198,7 +200,7 @@ function drawCircle(){
     const centerDot=document.createElementNS(NS,'circle');
     centerDot.setAttribute('cx',cx);centerDot.setAttribute('cy',cy);centerDot.setAttribute('r','96');
     centerDot.setAttribute('fill','#111');circleSvg.appendChild(centerDot);
-  }else{
+  }else if(warningVisible){
     const warning=[['BAHNEN',330],['NICHT',500],['BETRETEN',670]];
     warning.forEach(([txt,yy])=>{
       const t=document.createElementNS(NS,'text');
@@ -278,7 +280,9 @@ board.addEventListener('pointerdown',e=>{
   x=clamp((e.clientX-r.left)/r.width);y=clamp((e.clientY-r.top)/r.height);renderCross();
 });
 center.onclick=()=>{x=.5;y=.5;renderCross()};
-reset.onclick=()=>{x=.5;y=.5;renderCross();topText.value='';ball.value='';note.value='';count.textContent='0';segments=16;buildSegmentButtons();drawCircle()};
+const toggleWarning=document.getElementById('toggleWarning');
+toggleWarning.onclick=()=>{warningVisible=!warningVisible;toggleWarning.textContent=warningVisible?'Schriftzug ausblenden':'Schriftzug einblenden';drawCircle()};
+reset.onclick=()=>{x=.5;y=.5;renderCross();topText.value='';ball.value='';note.value='';count.textContent='0';segments=16;warningVisible=true;toggleWarning.textContent='Schriftzug ausblenden';buildSegmentButtons();drawCircle()};
 note.addEventListener('input',()=>count.textContent=note.value.length);
 
 share.onclick=async()=>{
@@ -303,7 +307,7 @@ share.onclick=async()=>{
     ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(ex,ey);ctx.stroke()
   }
   if(!isField){ctx.fillStyle='#111';ctx.beginPath();ctx.arc(cx,cy,120,0,Math.PI*2);ctx.fill();}
-  if(isField){
+  if(isField && warningVisible){
     ctx.fillStyle='#111';ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.font='900 130px Arial, Helvetica, sans-serif';
     ctx.fillText('BAHNEN',cx,330);ctx.fillText('NICHT',cx,500);ctx.fillText('BETRETEN',cx,670);
@@ -362,6 +366,8 @@ const openField=document.getElementById('openField');
 const backHome=document.getElementById('backHome');
 function openMode(field){
   document.body.classList.toggle('fieldMode',field);
+  toggleWarning.style.display=field?'inline-block':'none';
+  warningVisible=true;toggleWarning.textContent='Schriftzug ausblenden';
   home.style.display='none';appPage.style.display='block';
   renderCross();drawCircle();
 }
