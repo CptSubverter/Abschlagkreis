@@ -72,7 +72,7 @@ button.action:active,.segmentBtn:active{transform:scale(.98)}
 }
 
 .home{position:relative;min-height:70vh;display:flex;align-items:center;justify-content:center}
-.homeTitle{display:none!important}.homeGrid{display:grid;grid-template-columns:repeat(2,minmax(260px,420px));gap:22px;width:100%;justify-content:center}
+.homeTitle{display:none!important}.homeGrid{display:grid;grid-template-columns:repeat(3,minmax(220px,1fr));gap:22px;width:100%;justify-content:center}
 .homeCard{border:1px solid #3b4a52;border-radius:16px;background:#202d34;padding:26px;box-shadow:0 3px 12px #0004;text-align:left;color:#fff;cursor:pointer}
 .homeCard:hover{border-color:#2196f3}
 .homeCard h2{font-size:28px;margin:0 0 8px}
@@ -81,7 +81,7 @@ button.action:active,.segmentBtn:active{transform:scale(.98)}
 .homeIcon svg{width:150px;height:150px}
 .modePage{display:none}
 .backBtn{margin-bottom:12px;background:transparent!important;border-color:#52616a!important}
-@media(max-width:650px){.homeGrid{grid-template-columns:1fr}.homeCard h2{font-size:24px}.homeIcon{height:125px}.homeIcon svg{width:125px;height:125px}}
+.endBoard{aspect-ratio:1}.endSvg{display:block;width:100%;height:100%}.endLine{stroke:#e60000;stroke-width:5;stroke-linecap:round}.endHint{color:#c8d0d5;font-size:14px;margin:10px 0 0;text-align:center}.endButtons{display:flex;gap:10px;justify-content:center;margin-top:14px}.endButtons button{flex:1}@media(max-width:650px){.homeGrid{grid-template-columns:1fr}.homeCard h2{font-size:24px}.homeIcon{height:125px}.homeIcon svg{width:125px;height:125px}}
 
 </style>
 </head>
@@ -104,6 +104,10 @@ button.action:active,.segmentBtn:active{transform:scale(.98)}
     <button class="homeCard" id="openField" type="button">
       <div class="homeIcon"><svg viewBox="0 0 180 140"><rect x="18" y="30" width="144" height="80" fill="#fff" stroke="#111" stroke-width="6"/><path d="M90 30v80M18 70h144" stroke="#111" stroke-width="3"/><path d="M90 55v30M75 70h30" stroke="#e60000" stroke-width="4"/></svg></div>
       <h2>Abschlagfeld</h2><p>Öffnet das rechteckige Abschlagfeld.</p>
+    </button>
+    <button class="homeCard" id="openEnd" type="button">
+      <div class="homeIcon"><svg viewBox="0 0 160 160"><circle cx="80" cy="80" r="62" fill="#fff" stroke="#111" stroke-width="5"/><circle cx="80" cy="80" r="59" fill="none" stroke="#111" stroke-width="3"/><circle cx="80" cy="80" r="4" fill="#fff" stroke="#111" stroke-width="3"/></svg></div>
+      <h2>Endkreis</h2><p>Endkreis mit frei zeichnbarer Linie.</p>
     </button>
   </div>
 </section>
@@ -148,6 +152,33 @@ button.action:active,.segmentBtn:active{transform:scale(.98)}
     <div class="info"><b>Hinweis</b><br>Die Abschlagmarkierung wird in die gewählte Anzahl gleich großer Segmente unterteilt. Das rote Kreuz bleibt frei verschiebbar.</div>
   </aside>
 </div>
+</div>
+
+<div class="modePage" id="endPage">
+  <button class="action backBtn" id="backEndHome" type="button">← Startseite</button>
+  <section class="panel">
+    <div class="field">
+      <label for="endTopText">Bahn</label>
+      <input id="endTopText" type="text" autocomplete="off" placeholder="Bahn eingeben">
+    </div>
+    <div class="field">
+      <label for="endNote">Bemerkung <span style="font-weight:400">(optional)</span></label>
+      <textarea id="endNote" maxlength="200" placeholder="Bemerkung eingeben"></textarea>
+      <div class="counter"><span id="endCount">0</span>/200</div>
+    </div>
+  </section>
+  <main>
+    <div class="boardWrap">
+      <div class="board endBoard" id="endBoard">
+        <svg id="endSvg" class="endSvg" viewBox="0 0 1000 1000" aria-label="Endkreis"></svg>
+      </div>
+      <div class="endHint">Auf dem Endkreis drücken und ziehen, um eine Linie von einem selbst gewählten Punkt in beliebiger Länge zu zeichnen.</div>
+    </div>
+    <div class="endButtons">
+      <button class="action" id="clearEndLine" type="button">Linie löschen</button>
+      <button class="action" id="resetEnd" type="button">Zurücksetzen</button>
+    </div>
+  </main>
 </div>
 </div>
 
@@ -381,6 +412,63 @@ const appPage=document.getElementById('appPage');
 const openCircle=document.getElementById('openCircle');
 const openField=document.getElementById('openField');
 const backHome=document.getElementById('backHome');
+const endPage=document.getElementById('endPage');
+const openEnd=document.getElementById('openEnd');
+const backEndHome=document.getElementById('backEndHome');
+const endBoard=document.getElementById('endBoard');
+const endSvg=document.getElementById('endSvg');
+const endTopText=document.getElementById('endTopText');
+const endNote=document.getElementById('endNote');
+const endCount=document.getElementById('endCount');
+const clearEndLine=document.getElementById('clearEndLine');
+const resetEnd=document.getElementById('resetEnd');
+let endDrawing=false,endStartX=0,endStartY=0,endEndX=0,endEndY=0,endHasLine=false;
+
+function drawEndCircle(){
+  const NS='http://www.w3.org/2000/svg';
+  endSvg.innerHTML='';
+  const cx=500,cy=500,outer=470,inner=442,centerR=16;
+  for(const r of [outer,inner]){
+    const circle=document.createElementNS(NS,'circle');
+    circle.setAttribute('cx',cx);circle.setAttribute('cy',cy);circle.setAttribute('r',r);
+    circle.setAttribute('fill','#fff');circle.setAttribute('stroke','#111');circle.setAttribute('stroke-width','8');
+    endSvg.appendChild(circle);
+  }
+  const centerCircle=document.createElementNS(NS,'circle');
+  centerCircle.setAttribute('cx',cx);centerCircle.setAttribute('cy',cy);centerCircle.setAttribute('r',centerR);
+  centerCircle.setAttribute('fill','#fff');centerCircle.setAttribute('stroke','#111');centerCircle.setAttribute('stroke-width','6');
+  endSvg.appendChild(centerCircle);
+  if(endHasLine){
+    const line=document.createElementNS(NS,'line');
+    line.setAttribute('x1',endStartX);line.setAttribute('y1',endStartY);
+    line.setAttribute('x2',endEndX);line.setAttribute('y2',endEndY);
+    line.setAttribute('class','endLine');endSvg.appendChild(line);
+  }
+}
+function endPoint(e){
+  const r=endBoard.getBoundingClientRect();
+  return {x:Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*1000,
+          y:Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))*1000};
+}
+endBoard.addEventListener('pointerdown',e=>{
+  endDrawing=true;
+  const p=endPoint(e);endStartX=p.x;endStartY=p.y;endEndX=p.x;endEndY=p.y;endHasLine=true;
+  endBoard.setPointerCapture?.(e.pointerId);drawEndCircle();e.preventDefault();
+});
+endBoard.addEventListener('pointermove',e=>{
+  if(!endDrawing)return;
+  const p=endPoint(e);endEndX=p.x;endEndY=p.y;drawEndCircle();e.preventDefault();
+});
+endBoard.addEventListener('pointerup',()=>{endDrawing=false});
+endBoard.addEventListener('pointercancel',()=>{endDrawing=false});
+endNote.addEventListener('input',()=>endCount.textContent=endNote.value.length);
+clearEndLine.onclick=()=>{endHasLine=false;drawEndCircle()};
+resetEnd.onclick=()=>{endTopText.value='';endNote.value='';endCount.textContent='0';endHasLine=false;drawEndCircle()};
+openEnd.onclick=()=>{
+  home.style.display='none';appPage.style.display='none';endPage.style.display='block';drawEndCircle();
+};
+backEndHome.onclick=()=>{endPage.style.display='none';home.style.display='flex'};
+
 function openMode(field){
   document.body.classList.toggle('fieldMode',field);
   warningVisible=true;toggleWarning.textContent='Schriftzug ausblenden';
@@ -390,7 +478,7 @@ function openMode(field){
 openCircle.onclick=()=>openMode(false);
 openField.onclick=()=>openMode(true);
 backHome.onclick=()=>{appPage.style.display='none';home.style.display='flex';document.body.classList.remove('fieldMode')};
-renderCross();buildSegmentButtons();drawCircle();
+renderCross();buildSegmentButtons();drawCircle();drawEndCircle();
 if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));
 </script>
 </body>
