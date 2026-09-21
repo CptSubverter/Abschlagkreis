@@ -106,7 +106,7 @@ button.action:active,.segmentBtn:active{transform:scale(.98)}
     </div>
     <div class="buttons">
       <button class="action" id="center">Kreuz zentrieren</button>
-      <button class="action primary" id="save">PNG speichern</button>
+      <button class="action primary" id="share">Teilen</button>
       <button class="action" id="reset">Zurücksetzen</button>
     </div>
   </main>
@@ -124,7 +124,7 @@ button.action:active,.segmentBtn:active{transform:scale(.98)}
 const board=document.getElementById('board');
 const cross=document.getElementById('cross');
 const circleSvg=document.getElementById('circleSvg');
-const save=document.getElementById('save');
+const share=document.getElementById('share');
 const center=document.getElementById('center');
 const reset=document.getElementById('reset');
 const note=document.getElementById('note');
@@ -207,7 +207,7 @@ center.onclick=()=>{x=.5;y=.5;renderCross()};
 reset.onclick=()=>{x=.5;y=.5;renderCross();topText.value='';ball.value='';note.value='';count.textContent='0';segments=16;buildSegmentButtons();drawCircle()};
 note.addEventListener('input',()=>count.textContent=note.value.length);
 
-save.onclick=()=>{
+share.onclick=async()=>{
   const size=1254,canvas=document.createElement('canvas'),infoHeight=300;
   canvas.width=size;canvas.height=size+infoHeight;
   const ctx=canvas.getContext('2d');
@@ -218,7 +218,6 @@ save.onclick=()=>{
   for(let i=0;i<segments;i++){const a=i/segments*Math.PI*2-Math.PI/2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);ctx.stroke()}
   const crossX=x*size,crossY=y*size;ctx.strokeStyle='#e60000';ctx.lineWidth=5;ctx.lineCap='butt';
   ctx.beginPath();ctx.moveTo(crossX-15,crossY);ctx.lineTo(crossX+15,crossY);ctx.moveTo(crossX,crossY-15);ctx.lineTo(crossX,crossY+15);ctx.stroke();
-
   ctx.strokeStyle='#d0d0d0';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(45,size+8);ctx.lineTo(size-45,size+8);ctx.stroke();
   ctx.fillStyle='#111';ctx.textAlign='left';ctx.font='bold 32px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif';
   ctx.fillText('Bahn: '+(topText.value.trim()||'—'),55,size+55);
@@ -236,11 +235,25 @@ save.onclick=()=>{
   }
   if(yy<=canvas.height-18)ctx.fillText(line,55,yy);
 
-  canvas.toBlob(blob=>{
+  canvas.toBlob(async blob=>{
     if(!blob)return;
-    const url=URL.createObjectURL(blob),a=document.createElement('a');
-    a.href=url;a.download='Abschlagkreis.png';a.rel='noopener';document.body.appendChild(a);a.click();a.remove();
-    setTimeout(()=>URL.revokeObjectURL(url),2000);
+    const file=new File([blob],'Abschlagkreis.png',{type:'image/png'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      try{
+        await navigator.share({
+          title:'Abschlagkreis',
+          text:'Abschlagkreis'+(topText.value.trim()?' – Bahn '+topText.value.trim():''),
+          files:[file]
+        });
+      }catch(e){
+        if(e.name!=='AbortError') alert('Teilen konnte nicht gestartet werden.');
+      }
+    }else if(navigator.share){
+      try{await navigator.share({title:'Abschlagkreis',text:'Abschlagkreis'+(topText.value.trim()?' – Bahn '+topText.value.trim():'')});}
+      catch(e){if(e.name!=='AbortError')alert('Teilen konnte nicht gestartet werden.')}
+    }else{
+      alert('Die Teilen-Funktion wird von diesem Browser nicht unterstützt.');
+    }
   },'image/png');
 };
 
