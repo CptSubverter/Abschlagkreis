@@ -27,7 +27,7 @@ textarea{min-height:118px;resize:vertical}
 .counter{text-align:right;color:#aeb8be;font-size:12px;margin-top:4px}
 .boardWrap{background:#fff;padding:14px;border-radius:2px}
 .board{position:relative;width:100%;aspect-ratio:1;touch-action:none;user-select:none;-webkit-user-select:none}
-#circleSvg{display:block;width:100%;height:100%}
+#circleSvg{display:block;width:100%;height:100%}\n.fieldMode .board{aspect-ratio:2 / 1}\n.fieldMode .boardWrap{padding:14px}
 .cross{position:absolute;width:30px;height:30px;left:50%;top:50%;transform:translate(-50%,-50%);touch-action:none;cursor:grab;z-index:2}
 .cross:before,.cross:after{content:"";position:absolute;background:#e60000;border-radius:1px}
 .cross:before{width:30px;height:5px;left:0;top:12.5px}
@@ -68,7 +68,19 @@ button.action:active,.segmentBtn:active{transform:scale(.98)}
   .buttons{flex-direction:column}
   button.action,button.action.primary{width:100%}
 }
-</style>
+
+.home{min-height:70vh;display:flex;align-items:center;justify-content:center}
+.homeGrid{display:grid;grid-template-columns:repeat(2,minmax(260px,420px));gap:22px;width:100%;justify-content:center}
+.homeCard{border:1px solid #3b4a52;border-radius:16px;background:#202d34;padding:26px;box-shadow:0 3px 12px #0004;text-align:left;color:#fff;cursor:pointer}
+.homeCard:hover{border-color:#2196f3}
+.homeCard h2{font-size:28px;margin:0 0 8px}
+.homeCard p{color:#c8d0d5;line-height:1.45;margin:0}
+.homeIcon{height:150px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.homeIcon svg{width:150px;height:150px}
+.modePage{display:none}
+.backBtn{margin-bottom:12px;background:transparent!important;border-color:#52616a!important}
+@media(max-width:650px){.homeGrid{grid-template-columns:1fr}.homeCard h2{font-size:24px}.homeIcon{height:125px}.homeIcon svg{width:125px;height:125px}}
+
 </head>
 <body>
 <div class="app">
@@ -80,7 +92,19 @@ button.action:active,.segmentBtn:active{transform:scale(.98)}
   <div class="tagline">Dein Tool<br>für den perfekten<br>Abschlag.</div>
 </header>
 
-<div class="workspace">
+<section class="home" id="home">
+  <div class="homeGrid">
+    <button class="homeCard" id="openCircle" type="button">
+      <div class="homeIcon"><svg viewBox="0 0 160 160"><circle cx="80" cy="80" r="61" fill="#fff" stroke="#111" stroke-width="6"/><path d="M80 19v122M19 80h122" stroke="#111" stroke-width="3"/><path d="M80 65v30M65 80h30" stroke="#e60000" stroke-width="4"/></svg></div>
+      <h2>Abschlagkreis</h2><p>Den Abschlagkreis wie bisher öffnen und das rote Kreuz frei positionieren.</p>
+    </button>
+    <button class="homeCard" id="openField" type="button">
+      <div class="homeIcon"><svg viewBox="0 0 180 140"><rect x="18" y="30" width="144" height="80" fill="#fff" stroke="#111" stroke-width="6"/><path d="M90 30v80M18 70h144" stroke="#111" stroke-width="3"/><path d="M90 55v30M75 70h30" stroke="#e60000" stroke-width="4"/></svg></div>
+      <h2>Abschlagfeld</h2><p>Ein längliches Abschlagfeld mit denselben Funktionen wie beim Abschlagkreis.</p>
+    </button>
+  </div>
+</section>
+<div class="modePage" id="appPage">
   <section class="panel">
     <div class="field">
       <label for="topText">Bahn</label>
@@ -119,6 +143,7 @@ button.action:active,.segmentBtn:active{transform:scale(.98)}
   </aside>
 </div>
 </div>
+</div>
 
 <script>
 const board=document.getElementById('board');
@@ -143,18 +168,27 @@ function clamp(v){return Math.max(.02,Math.min(.98,v))}
 function drawCircle(){
   const NS='http://www.w3.org/2000/svg';
   circleSvg.innerHTML='';
-  const cx=500,cy=500,r=470;
-  const outline=document.createElementNS(NS,'circle');
-  outline.setAttribute('cx',cx);outline.setAttribute('cy',cy);outline.setAttribute('r',r);
-  outline.setAttribute('fill','#fff');outline.setAttribute('stroke','#111');outline.setAttribute('stroke-width','10');
-  circleSvg.appendChild(outline);
+  const isField=document.body.classList.contains('fieldMode');
+  const cx=500,cy=500;
+  let minX=30,maxX=970,minY=170,maxY=830,r=470;
+  if(!isField){minX=30;maxX=970;minY=30;maxY=970}
+  const outline=document.createElementNS(NS,isField?'rect':'circle');
+  if(isField){
+    outline.setAttribute('x',minX);outline.setAttribute('y',minY);outline.setAttribute('width',maxX-minX);outline.setAttribute('height',maxY-minY);
+  }else{
+    outline.setAttribute('cx',cx);outline.setAttribute('cy',cy);outline.setAttribute('r',r);
+  }
+  outline.setAttribute('fill','#fff');outline.setAttribute('stroke','#111');outline.setAttribute('stroke-width','10');circleSvg.appendChild(outline);
   for(let i=0;i<segments;i++){
     const a=(i/segments)*Math.PI*2-Math.PI/2;
+    let ex,ey;
+    if(isField){
+      const dx=Math.cos(a),dy=Math.sin(a),tx=dx===0?Infinity:((dx>0?maxX-cx:minX-cx)/dx),ty=dy===0?Infinity:((dy>0?maxY-cy:minY-cy)/dy),t=Math.min(Math.abs(tx),Math.abs(ty));
+      ex=cx+dx*t;ey=cy+dy*t;
+    }else{ex=cx+Math.cos(a)*r;ey=cy+Math.sin(a)*r}
     const line=document.createElementNS(NS,'line');
-    line.setAttribute('x1',cx);line.setAttribute('y1',cy);
-    line.setAttribute('x2',cx+Math.cos(a)*r);line.setAttribute('y2',cy+Math.sin(a)*r);
-    line.setAttribute('stroke','#111');line.setAttribute('stroke-width',segments>=48?'3':'5');
-    circleSvg.appendChild(line);
+    line.setAttribute('x1',cx);line.setAttribute('y1',cy);line.setAttribute('x2',ex);line.setAttribute('y2',ey);
+    line.setAttribute('stroke','#111');line.setAttribute('stroke-width',segments>=48?'3':'5');circleSvg.appendChild(line);
   }
 }
 
@@ -212,11 +246,23 @@ share.onclick=async()=>{
   canvas.width=size;canvas.height=size+infoHeight;
   const ctx=canvas.getContext('2d');
   ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+  const isField=document.body.classList.contains('fieldMode');
   const cx=size/2,cy=size/2,r=size*.47;
-  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();ctx.strokeStyle='#111';ctx.lineWidth=10;ctx.stroke();
+  const left=isField?70:40,right=isField?1184:size-40,top=isField?315:40,bottom=isField?939:size-40;
+  ctx.fillStyle='#fff';ctx.strokeStyle='#111';ctx.lineWidth=10;
+  ctx.beginPath();
+  if(isField)ctx.rect(left,top,right-left,bottom-top);else ctx.arc(cx,cy,r,0,Math.PI*2);
+  ctx.fill();ctx.stroke();
   ctx.strokeStyle='#111';ctx.lineWidth=segments>=48?3:5;
-  for(let i=0;i<segments;i++){const a=i/segments*Math.PI*2-Math.PI/2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);ctx.stroke()}
-  const crossX=x*size,crossY=y*size;ctx.strokeStyle='#e60000';ctx.lineWidth=5;ctx.lineCap='butt';
+  for(let i=0;i<segments;i++){
+    const a=i/segments*Math.PI*2-Math.PI/2;let ex,ey;
+    if(isField){
+      const dx=Math.cos(a),dy=Math.sin(a),tx=dx===0?Infinity:((dx>0?right-cx:left-cx)/dx),ty=dy===0?Infinity:((dy>0?bottom-cy:top-cy)/dy),t=Math.min(Math.abs(tx),Math.abs(ty));
+      ex=cx+dx*t;ey=cy+dy*t;
+    }else{ex=cx+Math.cos(a)*r;ey=cy+Math.sin(a)*r}
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(ex,ey);ctx.stroke()
+  }
+  const crossX=x*size,crossY=isField?top+y*(bottom-top):y*size;ctx.strokeStyle='#e60000';ctx.lineWidth=5;ctx.lineCap='butt';
   ctx.beginPath();ctx.moveTo(crossX-15,crossY);ctx.lineTo(crossX+15,crossY);ctx.moveTo(crossX,crossY-15);ctx.lineTo(crossX,crossY+15);ctx.stroke();
   ctx.strokeStyle='#d0d0d0';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(45,size+8);ctx.lineTo(size-45,size+8);ctx.stroke();
   ctx.fillStyle='#111';ctx.textAlign='left';ctx.font='bold 32px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif';
@@ -257,6 +303,19 @@ share.onclick=async()=>{
   },'image/png');
 };
 
+const home=document.getElementById('home');
+const appPage=document.getElementById('appPage');
+const openCircle=document.getElementById('openCircle');
+const openField=document.getElementById('openField');
+const backHome=document.getElementById('backHome');
+function openMode(field){
+  document.body.classList.toggle('fieldMode',field);
+  home.style.display='none';appPage.style.display='block';
+  renderCross();drawCircle();
+}
+openCircle.onclick=()=>openMode(false);
+openField.onclick=()=>openMode(true);
+backHome.onclick=()=>{appPage.style.display='none';home.style.display='flex';document.body.classList.remove('fieldMode')};
 renderCross();buildSegmentButtons();drawCircle();
 if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));
 </script>
