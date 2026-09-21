@@ -162,7 +162,7 @@ const topText=document.getElementById('topText');
 const ball=document.getElementById('ball');
 const segmentGrid=document.getElementById('segmentGrid');
 
-const segmentOptions=[4,8,12,16,24,32,36,48,64];
+const segmentOptions=[0,4,8,12,16,24,32,36,48,64];
 let segments=16;
 let x=.5,y=.5,startX=0,startY=0,startPX=0,startPY=0,drag=false;
 
@@ -200,6 +200,20 @@ function segmentIcon(n){
   const NS='http://www.w3.org/2000/svg';
   const s=document.createElementNS(NS,'svg');s.setAttribute('viewBox','0 0 140 70');
   const isField=document.body.classList.contains('fieldMode');
+  if(n===0){
+    if(isField){
+      const q=document.createElementNS(NS,'rect');
+      q.setAttribute('x','4');q.setAttribute('y','16');q.setAttribute('width','132');q.setAttribute('height','38');
+      q.setAttribute('fill','none');q.setAttribute('stroke','currentColor');q.setAttribute('stroke-width','5');
+      s.appendChild(q);
+    }else{
+      const c=document.createElementNS(NS,'circle');
+      c.setAttribute('cx','60');c.setAttribute('cy','40');c.setAttribute('r','31');
+      c.setAttribute('fill','none');c.setAttribute('stroke','currentColor');c.setAttribute('stroke-width','5');
+      s.appendChild(c);
+    }
+    return s;
+  }
   if(isField){
     const x=4,y=16,w=132,h=38,cx=70,cy=35;
     const q=document.createElementNS(NS,'rect');q.setAttribute('x',x);q.setAttribute('y',y);q.setAttribute('width',w);q.setAttribute('height',h);q.setAttribute('fill','none');q.setAttribute('stroke','currentColor');q.setAttribute('stroke-width','5');s.appendChild(q);
@@ -222,7 +236,7 @@ function buildSegmentButtons(){
     b.className='segmentBtn'+(n===segments?' selected':'');
     b.type='button';
     b.appendChild(segmentIcon(n));
-    const t=document.createElement('span');t.textContent=n;b.appendChild(t);
+    const t=document.createElement('span');t.textContent=n===0?'Ohne Linien':n;b.appendChild(t);
     b.addEventListener('click',()=>{segments=n;buildSegmentButtons();drawCircle()});
     segmentGrid.appendChild(b);
   });
