@@ -174,7 +174,7 @@ function drawCircle(){
   circleSvg.innerHTML='';
   const isField=document.body.classList.contains('fieldMode');
   const cx=500,cy=500;
-  let minX=30,maxX=970,minY=170,maxY=830,r=470;
+  let minX=20,maxX=980,minY=270,maxY=730,r=470;
   if(!isField){minX=30;maxX=970;minY=30;maxY=970}
   const outline=document.createElementNS(NS,isField?'rect':'circle');
   if(isField){
