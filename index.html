@@ -136,6 +136,7 @@ button.action:active,.segmentBtn:active{transform:scale(.98)}
       <button class="action" id="center">Kreuz zentrieren</button>
       <button class="action" id="toggleWarning" type="button" style="display:block!important" title="Schriftzug BAHNEN NICHT BETRETEN ein- oder ausblenden">Schriftzug ausblenden</button>
       <button class="action primary" id="share">Teilen</button>
+      <button class="action" id="downloadJpg">JPG herunterladen</button>
       <button class="action" id="reset">Zurücksetzen</button>
     </div>
   </main>
@@ -155,6 +156,7 @@ const board=document.getElementById('board');
 const cross=document.getElementById('cross');
 const circleSvg=document.getElementById('circleSvg');
 const share=document.getElementById('share');
+const downloadJpg=document.getElementById('downloadJpg');
 const center=document.getElementById('center');
 const reset=document.getElementById('reset');
 const note=document.getElementById('note');
@@ -285,7 +287,7 @@ toggleWarning.onclick=()=>{warningVisible=!warningVisible;toggleWarning.textCont
 reset.onclick=()=>{x=.5;y=.5;renderCross();topText.value='';ball.value='';note.value='';count.textContent='0';segments=16;warningVisible=true;toggleWarning.textContent='Schriftzug ausblenden';buildSegmentButtons();drawCircle()};
 note.addEventListener('input',()=>count.textContent=note.value.length);
 
-share.onclick=async()=>{
+function createExportCanvas(){ 
   const size=1254,canvas=document.createElement('canvas'),infoHeight=300;
   canvas.width=size;canvas.height=size+infoHeight;
   const ctx=canvas.getContext('2d');
@@ -315,9 +317,7 @@ share.onclick=async()=>{
   const boardPx=board.getBoundingClientRect().width;
   const scale=size/boardPx;
   const crossX=x*size,crossY=y*size;
-  ctx.strokeStyle='#e60000';
-  ctx.lineWidth=5*scale;
-  ctx.lineCap='butt';
+  ctx.strokeStyle='#e60000';ctx.lineWidth=5*scale;ctx.lineCap='butt';
   const crossArm=(30*scale)/2;
   ctx.beginPath();ctx.moveTo(crossX-crossArm,crossY);ctx.lineTo(crossX+crossArm,crossY);ctx.moveTo(crossX,crossY-crossArm);ctx.lineTo(crossX,crossY+crossArm);ctx.stroke();
   ctx.strokeStyle='#d0d0d0';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(45,size+8);ctx.lineTo(size-45,size+8);ctx.stroke();
@@ -330,13 +330,17 @@ share.onclick=async()=>{
   ctx.font='26px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif';
   const text=note.value.trim()||'—',maxWidth=size-110,lineHeight=34;
   let line='',yy=size+178;
-  for(const word of text.split(/\\s+/)){
+  for(const word of text.split(/\s+/)){
     const test=line?line+' '+word:word;
     if(ctx.measureText(test).width>maxWidth&&line){ctx.fillText(line,55,yy);line=word;yy+=lineHeight;if(yy>canvas.height-18)break}
     else line=test;
   }
   if(yy<=canvas.height-18)ctx.fillText(line,55,yy);
+  return canvas;
+}
 
+share.onclick=async()=>{
+  const canvas=createExportCanvas();
   canvas.toBlob(async blob=>{
     if(!blob)return;
     const file=new File([blob],'Abschlagkreis.png',{type:'image/png'});
@@ -357,6 +361,19 @@ share.onclick=async()=>{
       alert('Die Teilen-Funktion wird von diesem Browser nicht unterstützt.');
     }
   },'image/png');
+};
+
+downloadJpg.onclick=()=>{
+  const canvas=createExportCanvas();
+  canvas.toBlob(blob=>{
+    if(!blob)return;
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download='Abschlagmarkierung'+(topText.value.trim()?'_Bahn_'+topText.value.trim().replace(/[^a-z0-9äöüÄÖÜß_-]+/gi,'_'):'')+'.jpg';
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  },'image/jpeg',0.92);
 };
 
 const home=document.getElementById('home');
