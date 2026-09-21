@@ -288,8 +288,8 @@ share.onclick=async()=>{
     }else{ex=cx+Math.cos(a)*r;ey=cy+Math.sin(a)*r}
     ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(ex,ey);ctx.stroke()
   }
-  const crossX=x*size,crossY=isField?top+y*(bottom-top):y*size;ctx.strokeStyle='#e60000';ctx.lineWidth=8;ctx.lineCap='butt';
-  const crossArm=24;
+  const crossX=x*size,crossY=isField?top+y*(bottom-top):y*size;ctx.strokeStyle='#e60000';ctx.lineWidth=10;ctx.lineCap='butt';
+  const crossArm=30;
   ctx.beginPath();ctx.moveTo(crossX-crossArm,crossY);ctx.lineTo(crossX+crossArm,crossY);ctx.moveTo(crossX,crossY-crossArm);ctx.lineTo(crossX,crossY+crossArm);ctx.stroke();
   ctx.strokeStyle='#d0d0d0';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(45,size+8);ctx.lineTo(size-45,size+8);ctx.stroke();
   ctx.fillStyle='#111';ctx.textAlign='left';ctx.font='bold 32px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif';
