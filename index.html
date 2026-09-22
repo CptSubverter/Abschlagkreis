@@ -471,8 +471,8 @@ function drawEndCircle(){
     });
     graphic.appendChild(line);
   }
-}
   endSvg.appendChild(graphic);
+}
 function endPoint(e){
   const r=endBoard.getBoundingClientRect();
   return {x:Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*1100,
