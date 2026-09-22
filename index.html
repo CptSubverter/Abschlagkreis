@@ -505,8 +505,8 @@ function createEndExportCanvas(){
   canvas.width=w;canvas.height=h+infoHeight;
   const ctx=canvas.getContext('2d');
   ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
-  ctx.save();ctx.translate(0,90*sy);
   const sx=w/1100,sy=h/1500;
+  ctx.save();ctx.translate(0,90*sy);
   const path=(d,lw)=>{
     const p=new Path2D(d);
     ctx.strokeStyle='#111';ctx.lineWidth=lw*sx;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke(p);
