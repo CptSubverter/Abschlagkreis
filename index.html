@@ -432,6 +432,8 @@ const endLineColors=['#e60000','#2457e6','#16a34a','#7c22e8','#f28c18'];
 function drawEndCircle(){
   const NS='http://www.w3.org/2000/svg';
   endSvg.innerHTML='';
+  const graphic=document.createElementNS(NS,'g');
+  graphic.setAttribute('transform','translate(0 90)');
   const mk=(tag,attrs)=>{
     const el=document.createElementNS(NS,tag);
     Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));
@@ -447,33 +449,34 @@ function drawEndCircle(){
   const rightSide='M830 870 L830 1238';
   const bottom='M270 1238 C315 1255 340 1238 380 1210 C420 1182 455 1182 500 1210 C545 1238 575 1255 620 1210 C665 1182 700 1182 740 1210 C780 1238 805 1255 830 1238';
 
-  endSvg.appendChild(mk('path',{d:outerPath,fill:'none',stroke:'#111','stroke-width':'12','stroke-linecap':'round'}));
-  endSvg.appendChild(mk('path',{d:innerPath,fill:'none',stroke:'#111','stroke-width':'5','stroke-linecap':'round'}));
-  [leftJoin,rightJoin].forEach(d=>endSvg.appendChild(mk('path',{d,fill:'none',stroke:'#111','stroke-width':'5','stroke-linecap':'round','stroke-linejoin':'round'})));
-  [leftSide,rightSide].forEach(d=>endSvg.appendChild(mk('path',{d,fill:'none',stroke:'#111','stroke-width':'12','stroke-linecap':'square'})));
-  endSvg.appendChild(mk('path',{d:bottom,fill:'none',stroke:'#111','stroke-width':'5','stroke-linecap':'round','stroke-linejoin':'round'}));
+  graphic.appendChild(mk('path',{d:outerPath,fill:'none',stroke:'#111','stroke-width':'12','stroke-linecap':'round'}));
+  graphic.appendChild(mk('path',{d:innerPath,fill:'none',stroke:'#111','stroke-width':'5','stroke-linecap':'round'}));
+  [leftJoin,rightJoin].forEach(d=>graphic.appendChild(mk('path',{d,fill:'none',stroke:'#111','stroke-width':'5','stroke-linecap':'round','stroke-linejoin':'round'})));
+  [leftSide,rightSide].forEach(d=>graphic.appendChild(mk('path',{d,fill:'none',stroke:'#111','stroke-width':'12','stroke-linecap':'square'})));
+  graphic.appendChild(mk('path',{d:bottom,fill:'none',stroke:'#111','stroke-width':'5','stroke-linecap':'round','stroke-linejoin':'round'}));
 
   // Mitte bewusst nicht ausgefüllt.
-  endSvg.appendChild(mk('circle',{cx:'550',cy:'490',r:'50',fill:'#fff',stroke:'#111','stroke-width':'5'}));
+  graphic.appendChild(mk('circle',{cx:'550',cy:'490',r:'50',fill:'#fff',stroke:'#111','stroke-width':'5'}));
 
   endLines.forEach(item=>{
     const line=mk('line',{x1:item.x1,y1:item.y1,x2:item.x2,y2:item.y2,class:'endLine',stroke:item.color});
-    endSvg.appendChild(line);
+    graphic.appendChild(line);
     const dot=mk('circle',{cx:item.x2,cy:item.y2,r:'10',fill:item.color});
-    endSvg.appendChild(dot);
+    graphic.appendChild(dot);
   });
   if(endDrawing){
     const line=mk('line',{
       x1:endStartX,y1:endStartY,x2:endEndX,y2:endEndY,
       class:'endLine',stroke:endLineColors[endLines.length%endLineColors.length]
     });
-    endSvg.appendChild(line);
+    graphic.appendChild(line);
   }
 }
+  endSvg.appendChild(graphic);
 function endPoint(e){
   const r=endBoard.getBoundingClientRect();
   return {x:Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*1100,
-          y:Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))*1500};
+          y:Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))*1500-90};
 }
 endBoard.addEventListener('pointerdown',e=>{
   endDrawing=true;
@@ -502,6 +505,7 @@ function createEndExportCanvas(){
   canvas.width=w;canvas.height=h+infoHeight;
   const ctx=canvas.getContext('2d');
   ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.save();ctx.translate(0,90*sy);
   const sx=w/1100,sy=h/1500;
   const path=(d,lw)=>{
     const p=new Path2D(d);
@@ -522,6 +526,7 @@ function createEndExportCanvas(){
     ctx.moveTo(item.x1*sx,item.y1*sy);ctx.lineTo(item.x2*sx,item.y2*sy);ctx.stroke();
     ctx.fillStyle=item.color;ctx.beginPath();ctx.arc(item.x2*sx,item.y2*sy,10*sx,0,Math.PI*2);ctx.fill();
   });
+  ctx.restore();
   ctx.strokeStyle='#d0d0d0';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(45,h+8);ctx.lineTo(w-45,h+8);ctx.stroke();
   ctx.fillStyle='#111';ctx.textAlign='left';ctx.font='bold 32px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif';
   ctx.fillText('Bahn: '+(endTopText.value.trim()||'—'),55,h+55);
